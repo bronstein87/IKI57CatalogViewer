@@ -1,0 +1,34 @@
+For catalog "10857.cat" :
+
+struct RECMAP {
+       long NHIP;
+       double Al,Dt;
+       float Mal,Mdt;
+       float Mv_old,Mv_new;
+       float Paral;
+       unsigned char Sk1,Sk2;
+       long NHD;
+//       float Bt,Vt,B_V,V_I;
+       float B_V;
+       char Vis,Per;
+       };
+
+For catalog "op10377.cat" :
+
+struct His_bas {
+       long Num;
+       float Al,Dt;
+       float Mv;
+       float B_V;
+       unsigned char k1,k2;
+       int n1;
+       long n2;
+       };
+
+For catalog "okr10377.cat" :
+
+struct Star_ocr {
+//       long Num;
+       float Al,Dt;
+       float Mv;
+       };
