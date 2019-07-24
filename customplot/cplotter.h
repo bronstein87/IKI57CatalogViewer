@@ -72,7 +72,7 @@ public:
         return modifier;
     }
 
-    void setTitle(const QString &_title) noexcept
+    void setTitle(const QString& _title) noexcept
     {
         title = _title;
     }
@@ -266,6 +266,10 @@ public:
         pColor.isSet = false;
     }
 
+    void setXAxisReversed(bool f) {xAxisReversed = f;}
+
+    void setYAxisReversed(bool f) {yAxisReversed = f;}
+
     void setNeedRescale(bool f) {needRescale = f;}
 
     static void synchronizeLegends(const QVector <QCustomPlot*>& set);
@@ -305,9 +309,13 @@ protected:
 
     QCustomPlot* plot;
     QPair <double, double> axisXRange = QPair <double, double> (0, 0);
-    double axisXCenter = 0;
+    double axisXCenter = -1;
+    bool xAxisReversed = false;
+
     QPair <double, double> axisYRange = QPair <double, double> (0, 0);
-    double axisYCenter = 0;
+    double axisYCenter = -1;
+    bool yAxisReversed = false;
+
     CustomColor pColor;
     bool needRescale = true;
 

@@ -26,6 +26,9 @@
 #include <customplot/cxyplotter.h>
 #include <QModelIndex>
 #include <QSettings>
+#include <QInputDialog>
+#include <QFileDialog>
+#include <QSqlRecord>
 
 namespace MainStar
 {
@@ -41,7 +44,8 @@ namespace MainStar
         M,
         N,
         To,
-        From
+        From,
+        Bright
     };
 };
 
@@ -56,6 +60,21 @@ namespace SurroundStar
         M,
         N
     };
+};
+
+struct SampleData
+{
+    QVector <qint32> starNum;
+    QVector <double> neibCount;
+    QVector <double> bright;
+    bool isActive = false;
+    void clear()
+    {
+        isActive = false;
+        starNum.clear();
+        neibCount.clear();
+        bright.clear();
+    }
 };
 
 
@@ -87,6 +106,27 @@ private slots:
 
     void on_mainStarTableView_pressed(const QModelIndex &index);
 
+    void on_chooseSaveFile_clicked();
+
+    void on_saveCurrentSample_clicked();
+
+    void on_mainStarTableView_doubleClicked(const QModelIndex &index);
+
+
+    void on_sampleGroupBox_toggled(bool arg1);
+
+    void on_saveSamplePushButton_clicked();
+
+    void on_joinSamplePushButton_clicked();
+
+    void on_showPushButton_clicked();
+
+    void on_unloadTxtPushButton_clicked();
+
+    void on_unloadBinPushButton_clicked();
+
+    void on_loadHandledSamplePushButton_clicked();
+
 private:
 
     void fillSurroundStars(QSqlQuery& surStarsQuery);
@@ -97,6 +137,16 @@ private:
 
     void initSurroundStarsDist(qint32 mainStarNum);
 
+    void showStarSurround(double l, double m, double n, double surroundRadius, qint32 from, qint32 to);
+
+    void makeSample();
+
+    void fillSampleComboBox(QComboBox* comboBox, bool update);
+
+    void plotSampleHistogramms();
+
+    void showSampleInTable();
+
     SurroundCatalog surCat;
     QSqlTableModel* surroundStars;
     QSqlTableModel* mainStars;
@@ -104,12 +154,14 @@ private:
     CXYPlotter plotter;
     QSettings* settings = nullptr;
     constexpr const static double fifteenMinutes = 15;
-
+    QPointF mainStarOffset;
+    QFile currentOutputFile;
+    SampleData sample;
 
     Ui::MainWindow *ui;
 
 
-    void showStarSurround(double l, double m, double n, double surroundRadius, qint32 from, qint32 to);
+
 };
 
 

@@ -41,3 +41,11 @@ target_wrapper.*
 
 # QtCreator CMake
 CMakeLists.txt.user*
+*.ini
+AverageList_26.06_clear.txt
+sqlitedb/DB.Browser.for.SQLite-3.10.1-win64.exe
+sqlitedb/integral_bright.TXT
+release/IKI57CatalogViewer.rar
+release/IKI57CatalogViewer.exe
+sqlitedb/DB.Browser.for.SQLite-3.10.1-win64.exe
+debug/IKI57CatalogViewer.exe

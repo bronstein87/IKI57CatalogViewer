@@ -52,7 +52,7 @@ void CXYPlotter::makeMainPlotOperations(const QVector<double>& secondDataVec, co
         }
         if (getAutoReplot())
         {
-           plot->replot();
+            plot->replot();
         }
     }
     else
@@ -73,22 +73,22 @@ void CXYPlotter::addPoint(const double& key, const double& value, PlotType type,
     {
         switch(type)
         {
-        case DATETIME:
-        {
-            auto dateTicker = QSharedPointer <QCPAxisTickerDateTime>::create();
-            plot->xAxis->setTicker(dateTicker);
-            break;
-        }
+            case DATETIME:
+            {
+                auto dateTicker = QSharedPointer <QCPAxisTickerDateTime>::create();
+                plot->xAxis->setTicker(dateTicker);
+                break;
+            }
 
-        case STABLE:
-        {
-            auto fixedTicker = QSharedPointer <QCPAxisTickerFixed>::create();
-            plot->xAxis->setTicker(fixedTicker);
-            fixedTicker->setTickStep(1.0);
-            break;
-        }
-        case DEFAULT:
-            break;
+            case STABLE:
+            {
+                auto fixedTicker = QSharedPointer <QCPAxisTickerFixed>::create();
+                plot->xAxis->setTicker(fixedTicker);
+                fixedTicker->setTickStep(1.0);
+                break;
+            }
+            case DEFAULT:
+                break;
 
         }
         setPlotOptions();
@@ -135,6 +135,42 @@ void CXYPlotter::addDateTimeGraph(const QVector<double>& firstDataVec, const QVe
     makeMainPlotOperations(secondDataVec, firstDataVec, sorted, syncAfter);
 }
 
+void CXYPlotter::addHistogramm(const QVector <double>& values, double step, bool groupOffset)
+{
+    plot->clearPlottables();
+    plot->clearItems();
+    setPlotOptions();
+    auto minmax = std::minmax_element(values.begin(), values.end());
+    qint32 begin = (qint32)(*minmax.first / step);
+    qint32 end = (qint32)(*minmax.second / step) + 1;
+    QVector <double> count(end - begin, 0);
+    for (const auto& i : values)
+    {
+        ++count[(i / step) - begin];
+    }
+
+    QVector<double> ticks;
+    QVector<QString> labels;
+    qint32 offset = groupOffset ? 1 : 0;
+    for (qint32 i = begin + offset; i < end + offset; ++i)
+    {
+        ticks.append(i);
+        labels.append(QString::number(i * step));
+    }
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+    plot->xAxis->setTicker(textTicker);
+    plot->xAxis->setTickLabelRotation(60);
+    plot->xAxis->setSubTicks(false);
+    minmax = std::minmax_element(count.begin(), count.end());
+    plot->yAxis->setRange(*minmax.first, *minmax.second);
+
+    QCPBars* hist = new QCPBars(plot->xAxis, plot->yAxis);
+    hist->setData(ticks, count);
+    plot->rescaleAxes();
+    plot->replot();
+}
+
 void CXYPlotter::updateGraph(const QVector<double>& firstDataVec , const QVector<double>& secondDataVec, int number, bool sorted)
 {
     if (!plotIsSetted())
@@ -153,12 +189,12 @@ QCPItemTracer* CXYPlotter::setTracer(int numberGraph, double pointX, bool select
     tr->setSelectable(selectable);
     tr->setSize(10);
     tr->setStyle(style);
-   // tr->setBrush(QBrush(QColor(255, 0, 0)));
+    // tr->setBrush(QBrush(QColor(255, 0, 0)));
     tr->setGraph(plot->graph(numberGraph));
     tr->setGraphKey(pointX);
     if (getAutoReplot())
     {
-         plot->replot();
+        plot->replot();
     }
     return tr;
 }

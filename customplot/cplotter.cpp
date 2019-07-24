@@ -95,7 +95,7 @@ void CPlotter::setSaveMenu()
                 QString filename =  QFileDialog::getSaveFileName(nullptr, tr("Save File"),
                                                                  "",
                                                                  tr("Images (*.png)"));
-                cplot->savePng(filename, 1024, 300);
+                cplot->savePng(filename, 600, 600);
             });
             connect(menu, &QMenu::triggered, menu, &QMenu::deleteLater);
             menu->addAction(savePlotPDF);
@@ -133,6 +133,8 @@ void CPlotter::resetOptions()
 {
     axisXRange = QPair <double, double> (0,0);
     axisYRange = QPair <double, double> (0,0);
+    axisXCenter = -1;
+    axisYCenter = -1;
     adaptiveSampling = true;
     title.clear();
     interactions = QCP::iRangeDrag | QCP::iRangeZoom| QCP::iSelectLegend;
@@ -155,7 +157,7 @@ bool CPlotter::setRange()
     bool used = false;
     if (!(qFuzzyCompare(axisXRange.first, 0) && qFuzzyCompare(axisXRange.second, 0)))
     {
-        if (!qFuzzyCompare(axisXCenter, 0))
+        if (!qFuzzyCompare(axisXCenter, -1))
         {
             plot->xAxis->setRange(axisXCenter, axisXRange.first * 2, Qt::AlignCenter);
         }
@@ -167,7 +169,7 @@ bool CPlotter::setRange()
     }
     if (!(qFuzzyCompare(axisYRange.first, 0) && qFuzzyCompare(axisYRange.second, 0)))
     {
-        if (!qFuzzyCompare(axisYCenter, 0))
+        if (!qFuzzyCompare(axisYCenter, -1))
         {
             plot->yAxis->setRange(axisYCenter, axisYRange.first * 2, Qt::AlignCenter);
         }
@@ -189,12 +191,14 @@ void CPlotter::setPlotOptions()
     plot->setMultiSelectModifier(modifier);
     plot->setOpenGl(useOpenGL);
     plot->xAxis->setLabel(axisXName);
+    plot->xAxis->setRangeReversed(xAxisReversed);
     plot->yAxis->setLabel(axisYName);
+    plot->yAxis->setRangeReversed(yAxisReversed);
     plot->yAxis->setNumberPrecision(8);
     plot->legend->setVisible(getUseLegend());
 
 
-    if (!qFuzzyCompare(axisXCenter, 0) || !qFuzzyCompare(axisXCenter, 0))
+    if (!qFuzzyCompare(axisXCenter, -1) && !qFuzzyCompare(axisYCenter, -1))
     {
         plot->setInteraction(QCP::iRangeZoom, false);
         auto tmpPlot = plot;
@@ -204,13 +208,13 @@ void CPlotter::setPlotOptions()
             {
                 if (event->angleDelta().y() < 0)
                 {
-                    tmpPlot->xAxis->scaleRange(1.2);
-                    tmpPlot->yAxis->scaleRange(1.2);
+                    tmpPlot->xAxis->scaleRange(1.05);
+                    tmpPlot->yAxis->scaleRange(1.05);
                 }
                 else
                 {
-                    tmpPlot->xAxis->scaleRange(0.8);
-                    tmpPlot->yAxis->scaleRange(0.8);
+                    tmpPlot->xAxis->scaleRange(0.95);
+                    tmpPlot->yAxis->scaleRange(0.95);
                 }
                 tmpPlot->replot();
             }

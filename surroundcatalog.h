@@ -65,6 +65,8 @@ private:
 
     void fillDatabase();
 
+    void fillIntegralBright();
+
     QVector <BaseStars> baseStars;
     QVector <SurroundStars> surroundStars;
     QSqlDatabase db;

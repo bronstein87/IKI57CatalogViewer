@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     mathfunc.cpp \
     surroundcatalog.cpp \
     customplot/cxyplotter.cpp \
-    customplot/cplotter.cpp
+    customplot/cplotter.cpp \
+    gms.cpp
 
 HEADERS  += mainwindow.h \
     customplot/qcustomplot.h \
@@ -27,12 +28,14 @@ HEADERS  += mainwindow.h \
     customplot/cxyplotter.h \
     customplot/cplotter.h \
     goodcolors.h \
-    sqlitedb/sqlite3.h
+    sqlitedb/sqlite3.h \
+    gms.h
 
 FORMS    += mainwindow.ui
 RC_FILE = viewerdisc.rc
 RESOURCES += \
-    viewer_rec.qrc
+    viewer_rec.qrc \
+    resources.qrc
 
 win32: LIBS += -L$$PWD/sqlitedb/ -lsqlite3
 

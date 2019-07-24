@@ -36,9 +36,13 @@ public:
 
     void addDateTimeGraph(const QVector<double>& firstDataVec,const QVector<double>& , bool sorted = false, bool syncAfter = false);
 
+    void addHistogramm(const QVector <double>& values, double step, bool groupOffset);
+
     void updateGraph(const QVector<double>& firstDataVec, const QVector<double>& secondDataVec, int number, bool sorted = false);
 
     QCPItemTracer* setTracer(int numberGraph, double pointX, bool selectable = false, QCPItemTracer::TracerStyle style = QCPItemTracer::TracerStyle::tsSquare);
+
+
 
     void setStyle(const QCPGraph::LineStyle& _lStyle, const QCPScatterStyle& _scStyle) noexcept
     {

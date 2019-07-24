@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/iconfinder_Alert_132559.png</file>
+        <file>resources/iconfinder_Yes_132508.png</file>
+    </qresource>
+</RCC>

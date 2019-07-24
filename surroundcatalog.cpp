@@ -7,6 +7,7 @@ SurroundCatalog::SurroundCatalog(const QString& path)
 {
     db.setDatabaseName("sqlitedb/catdb.db");
     db.open();
+
     QSqlQuery isEmptyQuery("SELECT COUNT(*) FROM stars");
 
     isEmptyQuery.next();
@@ -14,22 +15,23 @@ SurroundCatalog::SurroundCatalog(const QString& path)
     {
         readCatalog(path);
         fillDatabase();
+        fillIntegralBright();
     }
-   QVariant v = db.driver()->handle();
-     if (v.isValid() && qstrcmp(v.typeName(), "sqlite3*") == 0)
-     {
-         sqlite3_initialize();
-         sqlite3 *db_handle = *static_cast<sqlite3 **>(v.data());
-         if (db_handle != nullptr)
-         {
-             sqlite3_enable_load_extension(db_handle, 1);
-             QSqlQuery query;
-             query.exec("SELECT load_extension('libsqlitefunctions.so');");
-             if (query.lastError() .isValid())
-             {
-                 qDebug() << "Error: cannot load the libsqlitefunctions.so (" << query.lastError().text()<<")";
-             }
-         }
+    QVariant v = db.driver()->handle();
+    if (v.isValid() && qstrcmp(v.typeName(), "sqlite3*") == 0)
+    {
+        sqlite3_initialize();
+        sqlite3 *db_handle = *static_cast<sqlite3 **>(v.data());
+        if (db_handle != nullptr)
+        {
+            qDebug() << sqlite3_enable_load_extension(db_handle, 1);
+            QSqlQuery query;
+            query.exec("SELECT load_extension('libsqlitefunctions.so');");
+            if (query.lastError() .isValid())
+            {
+                qDebug() << "Error: cannot load the libsqlitefunctions.so (" << query.lastError().text()<<")";
+            }
+        }
     }
 }
 
@@ -91,20 +93,44 @@ void SurroundCatalog::fillDatabase()
     int counter = 0;
     for (const auto& i : surroundStars)
     {
-            qint32 id = counter++;
-            double alpha = i.alpha * radToDegrees;
-            double delta = i.delta * radToDegrees;
-            calculateDirectionVector(alpha, delta, l, m, n);
-            query.addBindValue(id);
-            query.addBindValue(alpha);
-            query.addBindValue(delta);
-            query.addBindValue(i.mv);
-            query.addBindValue(l);
-            query.addBindValue(m);
-            query.addBindValue(n);
-            query.exec();
+        qint32 id = counter++;
+        double alpha = i.alpha * radToDegrees;
+        double delta = i.delta * radToDegrees;
+        calculateDirectionVector(alpha, delta, l, m, n);
+        query.addBindValue(id);
+        query.addBindValue(alpha);
+        query.addBindValue(delta);
+        query.addBindValue(i.mv);
+        query.addBindValue(l);
+        query.addBindValue(m);
+        query.addBindValue(n);
+        query.exec();
     }
     qDebug() << "end";
     db.commit();
 
 }
+void SurroundCatalog::fillIntegralBright()
+{
+
+    QFile f ("sqlitedb/integral_bright.TXT");
+    if (f.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&f);
+        QString line;
+        while (in.readLineInto(&line))
+        {
+            auto list = line.split(" ", QString::SkipEmptyParts);
+            QSqlQuery query;
+            query.exec(QString("UPDATE stars SET integral_bright = %1 WHERE hip_num = %2")
+                       .arg(list[2].toDouble())
+                    .arg(list[1].toInt()));
+        }
+    }
+    else
+    {
+        qDebug() << "Не удалось считать файл интегральных яркостей";
+    }
+}
+
+
